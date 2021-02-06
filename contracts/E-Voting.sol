@@ -68,7 +68,8 @@ contract Election {
     
     function vote(uint32 candidateId) public {
         // require(!voters[msg.sender], "Candidate has already voted!");
-        require(candidateId > 0 && candidateId <= candidatesCount, "Invalid Candidate!");
+        require(candidateId > 0 && candidateId <= candidatesCount && !voters[msg.sender].hasVoted
+            , "Invalid Candidate!");
 
         uint32 voterId = votersCount++;
         candidates[candidateId].votesReceived++;
