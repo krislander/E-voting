@@ -16,10 +16,10 @@
       }
     </style>
   <body>
-    <div class="container" style="width: 650px;">
+    <div class="container" style="width: 850px;">
       <div class="row">
         <div class="col-lg-12">
-          <h1 class="text-center">Election Results</h1>
+          <h1 class="text-center">E-Voting</h1>
           <hr/>
           <br/>
           <div id="loader">
@@ -31,6 +31,7 @@
                 <tr>
                   <th scope="col">#</th>
                   <th scope="col">Name</th>
+                  <th scope="col">Political party</th>
                   <th scope="col">Votes</th>
                 </tr>
               </thead>
@@ -44,7 +45,9 @@
                 <select class="form-control" id="candidatesSelect">
                 </select>
               </div>
-              <button type="submit" class="btn btn-primary">Vote</button>
+              <div class="col text-center">
+                <button type="submit" class="btn btn-primary btn-lg" style>Vote</button>
+              </div>
               <hr />
             </form>
             <p id="accountAddress" class="text-center"></p>

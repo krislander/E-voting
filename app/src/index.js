@@ -1,4 +1,5 @@
 import Web3 from "web3";
+import {default as contract} from '@truffle/contract';
 import ElectionArtifact from "../../build/contracts/Election.json";
 
 const truffleContract = require('@truffle/contract');
@@ -14,11 +15,11 @@ var App = {
     return App.initWeb3();
   },
 
-  initWeb3: function() {
+  initWeb3: async function() {
     if (window.ethereum) {
       // use MetaMask's provider
       App.web3Provider = new Web3(window.ethereum);
-      window.ethereum.enable();
+      await window.ethereum.enable();
       console.log("Connected to window.ethereum") // get permission to access accounts
     }
 
@@ -26,21 +27,20 @@ var App = {
   },
 
   initContract: async function() {
-    const { web3Provider } = this;
-    // var contractAddress = "0x55AF7ae95cEA8CD398972528bb4242D734404138";
-    // var abi = ElectionArtifact.abi;
   
     try {
-      App.contracts.Election = truffleContract(ElectionArtifact);
-      App.contracts.Election.setProvider(web3Provider);
+      App.contracts.Election = contract(ElectionArtifact);
+      App.contracts.Election.setProvider(web3.currentProvider);
 
       // get accounts
-      const accounts = await web3Provider.eth.getAccounts();
-      this.account = accounts[0];
+      const accounts = await App.web3Provider.eth.getAccounts();
+      App.account = accounts[0];
+      $("#accountAddress").html("Your Account Address: " + App.account);
       console.log("INITContract", App.contracts)
 
-      App.listenForEvents();
+      // RenderApp.listenForEvents();
 
+      
       return App.render();
     } catch (error) {
       console.log(error);
@@ -71,14 +71,16 @@ var App = {
     var content = $("#content");
 
     loader.show();
-    content.hide();
+    //content.hide();
 
-    // Load account data
-    web3.eth.getCoinbase(function(err, account) {
-      if (err === null) {
-        App.account = account;
-        $("#accountAddress").html("Your Account: " + account);
-      }
+    // Acccounts now exposed
+    window.ethereum.on('accountsChanged', function () {
+      App.web3Provider.eth.getAccounts(function (error, accounts) {
+        if (error === null) { 
+          App.account = accounts[0];
+          $("#accountAddress").html("Your Account Address: " + App.account);
+        }
+      });
     });
 
     // Load contract data

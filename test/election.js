@@ -11,7 +11,7 @@ contract("Election", function(accounts) {
     });
   });
 
-  it("it initializes the candidates with the correct values", function() {
+  it("it initializes candidates with the correct values", function() {
     return Election.deployed().then(function(instance) {
       electionInstance = instance;
       return electionInstance.candidates(1);
@@ -29,7 +29,7 @@ contract("Election", function(accounts) {
     });
   });
 
-  it("allows a voter to cast a vote", function() {
+  it("allows a voter to vote", function() {
     return Election.deployed().then(function(instance) {
       electionInstance = instance;
       candidateId = 1;
@@ -65,7 +65,7 @@ contract("Election", function(accounts) {
     });
   });
 
-  it("throws an exception for double voting", function() {
+  it("throws an exception for voting again", function() {
     return Election.deployed().then(function(instance) {
       electionInstance = instance;
       candidateId = 2;
