@@ -1,6 +1,8 @@
 import Web3 from "web3";
 import ElectionArtifact from "../../build/contracts/Election.json";
 
+const truffleContract = require('@truffle/contract');
+
 var App = {
   web3Provider: null,
   contracts: {},
@@ -13,27 +15,37 @@ var App = {
   },
 
   initWeb3: function() {
-    App.web3Provider = new Web3.providers.HttpProvider('http://localhost:7545');
-    web3 = new Web3(window.ethereum);
-    
-    App.accounts = web3.eth.getAccounts();
+    if (window.ethereum) {
+      // use MetaMask's provider
+      App.web3Provider = new Web3(window.ethereum);
+      window.ethereum.enable();
+      console.log("Connected to window.ethereum") // get permission to access accounts
+    }
 
-    console.log("INITWEB3", App.web3Provider);
     return App.initContract();
   },
 
-  initContract: function() {
-    $.getJSON("../../build/contracts/Election.json", function(election) {
-      // Instantiate a new truffle contract from the artifact
-      App.contracts.Election = TruffleContract(election);
-      // Connect provider to interact with contract
-      App.contracts.Election.setProvider(App.web3Provider);
+  initContract: async function() {
+    const { web3Provider } = this;
+    // var contractAddress = "0x55AF7ae95cEA8CD398972528bb4242D734404138";
+    // var abi = ElectionArtifact.abi;
+  
+    try {
+      App.contracts.Election = truffleContract(ElectionArtifact);
+      App.contracts.Election.setProvider(web3Provider);
+
+      // get accounts
+      const accounts = await web3Provider.eth.getAccounts();
+      this.account = accounts[0];
+      console.log("INITContract", App.contracts)
 
       App.listenForEvents();
 
-      console.log("INITContract", App.contracts)
       return App.render();
-    });
+    } catch (error) {
+      console.log(error);
+      console.error("Could not connect to contract or chain.");
+    }
   },
 
   // Listen for events emitted from the contract

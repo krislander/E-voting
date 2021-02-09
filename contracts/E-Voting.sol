@@ -55,15 +55,24 @@ contract Election {
     }
 
     function getTotalVotes(uint32 candidateId) view public returns (uint256) {
-        bytes memory nameString = bytes(candidates[candidateId].candidateName);
-        require(candidateId > 0 && nameString.length == 0, "Invalid candidate ID");
+        require(candidateId > 0, "Invalid candidate ID");
         return candidates[candidateId].votesReceived;
     }
     
     function addCandidate(string memory name, string memory party) isOwner public {
+        require(checkForUniqueCandidate(name), "Candidate already exists");
         candidatesCount++;
         candidates[candidatesCount] = Candidate(candidatesCount, name, party, 0);
         emit AddCandidate(candidatesCount);
+    }
+
+    function checkForUniqueCandidate(string memory name) view private returns (bool){
+        for(uint32 i = 0; i < candidatesCount; i++) {
+            if(keccak256(abi.encodePacked(candidates[i].candidateName)) == keccak256(abi.encodePacked(name))) {
+                return false;
+            }
+        }
+        return true;
     }
     
     function vote(uint32 candidateId) public {

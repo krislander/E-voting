@@ -18,6 +18,8 @@
     "webpack-dev-server": "^3.9.0"
   },
   "dependencies": {
+    "@truffle/contract": "^4.3.6",
+    "fs": "0.0.1-security",
     "web3": "^1.2.4"
   }
 }
