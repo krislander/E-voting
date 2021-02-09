@@ -34,12 +34,18 @@ contract Election {
     event OwnerSet(address indexed oldOwner, address indexed newOwner);
     event AddCandidate(uint candidateId);
     event VoteInElection(uint256 indexed candidateId);
+    event AnnounceElectionResults(uint256 winnerId, uint256 winnerVotes);
     
     constructor() {
         owner = msg.sender;
         emit OwnerSet(address(0), owner);
         addCandidate("Donald Trump", "Republicans");
         addCandidate("Joe Biden", "Democrats");
+    }
+
+    function resetElectionState() private {
+        candidatesCount = 0;
+        votersCount = 0;
     }
     
     function getNumberOfCandidates() external view returns(uint32) {
@@ -84,5 +90,23 @@ contract Election {
         candidates[candidateId].votesReceived++;
         voters[msg.sender] = Voter(msg.sender, voterId, true);
         emit VoteInElection(candidateId);
+    }
+
+    function concludeElection() isOwner public{
+        require(candidatesCount > 1, "Cannot conclude election with one candidate!");
+    
+        uint32 winnerId = 0;
+        uint256 winnerVotesReceived = 0;
+
+        for(uint32 i = 1; i <= candidatesCount; i++) {
+            uint256 temp = getTotalVotes(candidates[i].candidateId);
+            if(temp > winnerVotesReceived) {
+                winnerId = candidates[i].candidateId;
+                winnerVotesReceived = temp;
+            }
+        }
+
+        emit AnnounceElectionResults(winnerId, winnerVotesReceived);
+        resetElectionState();
     }
 }
