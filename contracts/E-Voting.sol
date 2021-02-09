@@ -31,14 +31,14 @@ contract Election {
     uint32 public candidatesCount;
     uint32 public votersCount;
     
-    event OwnerSet(address indexed oldOwner, address indexed newOwner);
+    event OwnerSet(address indexed newOwner);
     event AddCandidate(uint candidateId);
     event VoteInElection(uint256 indexed candidateId);
     event AnnounceElectionResults(uint256 winnerId, uint256 winnerVotes);
     
     constructor() {
         owner = msg.sender;
-        emit OwnerSet(address(0), owner);
+        emit OwnerSet(owner);
         addCandidate("Donald Trump", "Republicans");
         addCandidate("Joe Biden", "Democrats");
     }
